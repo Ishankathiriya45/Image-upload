@@ -20,7 +20,7 @@ class ExcelController {
                 multerData.push(detail)
             }
             const workBook = XLSX.utils.book_new()
-            
+
             const multerDetailSheet = XLSX.utils.json_to_sheet(multerData)
             XLSX.utils.book_append_sheet(workBook, multerDetailSheet, 'multer sheet')
             const filePath = path.join('public/uploads/excel', `MulterReport-${Date.now()}.xlsx`)
