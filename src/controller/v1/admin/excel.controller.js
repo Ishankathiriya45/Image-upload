@@ -53,7 +53,7 @@ class ExcelController {
 
             const detaile = await ExcelFileModel.bulkCreate(jsonData)
             return responseMsg.successResponse(1, 'Success', detaile)
-        }catch(error){
+        } catch (error) {
             return responseMsg.serverError(0, 'Failed', error.message)
         }
     }
