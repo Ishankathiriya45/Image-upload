@@ -10,7 +10,7 @@ const ExcelFileModel = db.ExcelFile;
 class ExcelController {
     constructor() { }
 
-    async craeteExcel(req, res) {
+    async craeteExcel() {
         try {
             let multerData = [];
 
@@ -35,7 +35,7 @@ class ExcelController {
         }
     }
 
-    async uploadExcel(req, res) {
+    async uploadExcel(req) {
         try {
             if (!req.file) {
                 return responseMsg.validationError(0, 'Failed')

@@ -8,7 +8,7 @@ const CsvFileModel = db.CsvFile;
 class CsvController {
     constructor() { }
 
-    async uploadCsv(req, res) {
+    async uploadCsv(req) {
         try {
             return new Promise((resolve, reject) => {
                 const resultData = [];
@@ -27,7 +27,7 @@ class CsvController {
         }
     }
 
-    async uploadDbToCsv(req, res) {
+    async uploadDbToCsv(req) {
         try {
             return new Promise((resolve, reject) => {
                 const csvData = [];
