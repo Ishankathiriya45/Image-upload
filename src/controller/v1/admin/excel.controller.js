@@ -11,6 +11,8 @@ class ExcelController {
     constructor() { }
 
     async craeteExcel() {
+        let t = await db.sequelize.transaction()
+
         try {
             let multerData = [];
 
@@ -21,7 +23,7 @@ class ExcelController {
             }
             const workBook = XLSX.utils.book_new()
 
-            const multerDetailSheet = XLSX.utils.json_to_sheet(multerData)
+            const multerDetailSheet = XLSX.utils.json_to_sheet(multerData, { transaction: t })
             XLSX.utils.book_append_sheet(workBook, multerDetailSheet, 'multer sheet')
             const filePath = path.join('public/uploads/excel', `MulterReport-${Date.now()}.xlsx`)
 
@@ -29,13 +31,17 @@ class ExcelController {
 
             const pathe = `${excelFileUrl}/${path.basename(filePath)}`;
 
+            await t.commit()
             return responseMsg.successResponse(1, 'Success.', pathe)
         } catch (error) {
+            await t.rollback()
             responseMsg.serverError(0, 'Failed.', error.message)
         }
     }
 
     async uploadExcel(req) {
+        let t = await db.sequelize.transaction()
+
         try {
             if (!req.file) {
                 return responseMsg.validationError(0, 'Failed')
@@ -51,9 +57,11 @@ class ExcelController {
                 return responseMsg.validationError(0, 'length empty')
             }
 
-            const detaile = await ExcelFileModel.bulkCreate(jsonData)
+            const detaile = await ExcelFileModel.bulkCreate(jsonData, {transaction:t})
+            await t.commit()
             return responseMsg.successResponse(1, 'Success', detaile)
         } catch (error) {
+            await t.rollback()
             return responseMsg.serverError(0, 'Failed', error.message)
         }
     }

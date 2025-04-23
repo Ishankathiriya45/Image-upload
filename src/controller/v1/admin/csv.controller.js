@@ -10,14 +10,14 @@ class CsvController {
 
     async uploadCsv(req) {
         try {
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 const resultData = [];
                 const csv_file = req.file.path;
 
                 fs.createReadStream(csv_file)
                     .pipe(csv())
                     .on('data', (data) => resultData.push(data))
-                    .on('end', () => resolve(
+                    .on('end', async () => resolve(
                         responseMsg.successResponse(1, 'Success', resultData)
                     ))
                     .on('error', reject);
@@ -28,6 +28,8 @@ class CsvController {
     }
 
     async uploadDbToCsv(req) {
+        // let t = await db.sequelize.transaction()
+
         try {
             return new Promise((resolve, reject) => {
                 const csvData = [];
@@ -49,12 +51,14 @@ class CsvController {
                     .on('end', async () => {
                         const csvDetail = await CsvFileModel.bulkCreate(csvData)
                         resolve(
+                            // await t.commit(),
                             responseMsg.successResponse(1, 'Csv file uploaded', csvDetail)
                         )
                     })
                     .on('error', reject)
             })
         } catch (error) {
+            // await t.rollback(),
             responseMsg.serverError(0, 'Something went wrong', error.message)
         }
     }

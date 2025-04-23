@@ -8,6 +8,8 @@ class Base64Controller {
     constructor() { }
 
     async createBase(req, res) {
+        let t = await db.sequelize.transaction()
+
         try {
             const { name, base64Img, filename } = req.body;
 
@@ -38,14 +40,16 @@ class Base64Controller {
                 filename: resPath,
             }
 
-            const detail = await ImageBase64Model.create(baseData)
+            const detail = await ImageBase64Model.create(baseData, {transaction:t})
 
             if (detail) {
+                await t.commit()
                 return responseMsg.successResponse(1, 'Success.', detail)
             } else {
                 return responseMsg.notFound(0, 'No data')
             }
         }catch(error){
+            await t.rollback()
             return responseMsg.serverError(0, 'Something went wrong', error.message)
         }
     }
