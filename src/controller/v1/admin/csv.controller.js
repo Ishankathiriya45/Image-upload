@@ -9,6 +9,8 @@ class CsvController {
     constructor() { }
 
     async uploadCsv(req) {
+        let t = await db.sequelize.transaction();
+
         try {
             return new Promise(async (resolve, reject) => {
                 const resultData = [];
@@ -17,10 +19,17 @@ class CsvController {
                 fs.createReadStream(csv_file)
                     .pipe(csv())
                     .on('data', (data) => resultData.push(data))
-                    .on('end', async () => resolve(
-                        responseMsg.successResponse(1, 'Success', resultData)
-                    ))
-                    .on('error', reject);
+                    .on('end', async () => {
+                        try {
+                            { transaction: t }
+                            await t.commit()
+
+                            resolve(responseMsg.successResponse(1, 'Success', resultData))
+                        } catch (error) {
+                            await t.rollback()
+                            reject(responseMsg.serverError(0, 'CSV processed Failed'))
+                        }
+                    })
             })
         } catch (error) {
             return responseMsg.serverError(0, 'CSV processed Failed', error.message)
@@ -28,7 +37,7 @@ class CsvController {
     }
 
     async uploadDbToCsv(req) {
-        // let t = await db.sequelize.transaction()
+        let t = await db.sequelize.transaction()
 
         try {
             return new Promise((resolve, reject) => {
@@ -49,17 +58,21 @@ class CsvController {
                         }
                     ))
                     .on('end', async () => {
-                        const csvDetail = await CsvFileModel.bulkCreate(csvData)
-                        resolve(
-                            // await t.commit(),
-                            responseMsg.successResponse(1, 'Csv file uploaded', csvDetail)
-                        )
+                        try {
+                            const csvDetail = await CsvFileModel.bulkCreate(csvData, { transaction: t })
+                            await t.commit(),
+                                resolve(
+                                    responseMsg.successResponse(1, 'Csv file uploaded', csvDetail)
+                                )
+                        } catch (error) {
+                            await t.rollback(),
+                                reject(responseMsg.serverError(0, 'Something went wrong', error.message))
+                        }
                     })
-                    .on('error', reject)
             })
         } catch (error) {
-            // await t.rollback(),
-            responseMsg.serverError(0, 'Something went wrong', error.message)
+            await t.rollback(),
+                responseMsg.serverError(0, 'Something went wrong', error.message)
         }
     }
 }
