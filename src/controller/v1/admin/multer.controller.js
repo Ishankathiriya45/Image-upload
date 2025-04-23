@@ -9,6 +9,9 @@ class MulterController {
     constructor() { }
 
     async createMulterData(req, res) {
+
+        let t = await db.sequelize.transaction()
+
         try {
             const { name } = req.body;
 
@@ -18,15 +21,20 @@ class MulterController {
             }
             // fileSizeKb(req.file.size)
 
-            const detail = await ImageMulterModel.create(multerData)
+            const detail = await ImageMulterModel.create(multerData, { transaction: t })
             const paths = `${imgUrl}/${path.basename(detail.image)}`
+
             if (detail) {
+                await t.commit()
                 // createImage(req.file.originalname, req.file.buffer)
                 return responseMsg.successResponse(1, 'Success.', detail)
             } else {
                 return responseMsg.notFound(0, 'No Data')
             }
         } catch (error) {
+
+            await t.rollback()
+
             // if (req.file) {
             //     let filePath = path.join('public/uploads/multer', req.file.filename)
             //     if (fs.existsSync(filePath)) {
