@@ -20,6 +20,7 @@ let sequelize;
 sequelize = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
   host: DB_HOSTNAME,
   dialect: "mysql",
+  logging: process.env.RUN_MODE == 'PROD' ? false : console.log,
   pool: {
     max: parseInt(process.env.DB_POOL_MAX),
     min: parseInt(process.env.DB_POOL_MIN),
