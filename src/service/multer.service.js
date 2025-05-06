@@ -10,6 +10,7 @@ const fileFilter = (req, file, cb) => {
         let allowedFileType = [];
         switch (file.fieldname) {
             case 'image':
+            case 'imageUrl':
                 allowedFileType = [
                     ".jpg",
                     ".jpeg",
@@ -20,7 +21,8 @@ const fileFilter = (req, file, cb) => {
                     ".pjpeg",
                     ".pjp",
                     ".svg",
-                    ".webp"
+                    ".webp",
+                    ".pdf",
                 ]
                 break;
             case 'csv_file':
@@ -61,6 +63,9 @@ const storage = multer.diskStorage({
             case 'image':
                 cb(null, path.join(__dirname, '../../public/uploads/multer'))
                 break;
+            case 'imageUrl':
+                cb(null, path.join(__dirname, '../../public/uploads/multer/productImgs'))
+                break;
             case 'csv_file':
                 cb(null, path.join(__dirname, '../../public/uploads/csv'))
                 break;
@@ -88,6 +93,7 @@ const storage = multer.diskStorage({
             case 'image':
             case 'csv_file':
             case 'excel_file':
+            case 'imageUrl':
                 cb(null, getFileName())
                 break;
             default:

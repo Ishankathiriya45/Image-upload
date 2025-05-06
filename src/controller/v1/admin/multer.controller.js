@@ -1,14 +1,15 @@
 const db = require("../../../models");
 const { responseMsg } = require("../../../response");
-const ImageMulterModel = db.ImageMulter;
 const fs = require('fs')
 const path = require('path');
 const imgUrl = process.env.IMAGE_FILE_URL;
+const ImageMulterModel = db.ImageMulter;
+const ProductImagesModel = db.ProductImages;
 
 class MulterController {
     constructor() { }
 
-    async createMulterData(req, res) {
+    async createSingleImg(req, res) {
 
         let t = await db.sequelize.transaction()
 
@@ -42,6 +43,25 @@ class MulterController {
             //     }
             // }
             return responseMsg.serverError(0, 'Something went wrong', error.message)
+        }
+    }
+
+    async createMultipleImg(req, res) {
+        try {
+
+            const productImg = req.files.map((file) => ({
+                imageUrl: file.filename,
+            }))
+
+            const detail = await ProductImagesModel.bulkCreate(productImg)
+
+            if (detail) {
+                return responseMsg.successResponse(1, "Success", detail)
+            } else {
+                return responseMsg.validationError(0, "No image found")
+            }
+        } catch (error) {
+            return responseMsg.serverError(0, "Failed", error.message)
         }
     }
 
