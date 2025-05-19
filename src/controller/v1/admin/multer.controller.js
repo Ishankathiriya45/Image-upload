@@ -48,7 +48,6 @@ class MulterController {
 
     async createMultipleImg(req, res) {
         try {
-
             const productImg = req.files.map((file) => ({
                 imageUrl: file.filename,
             }))

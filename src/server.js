@@ -5,6 +5,7 @@ const path = require('path')
 const cors = require('cors')
 const { rateLimit } = require('express-rate-limit')
 const db = require('./models');
+const clc = require('cli-color');
 
 const app = express();
 app.use(cors())
@@ -25,7 +26,7 @@ app.use('/api', require('./router'))
 
 const port = process.env['PORT_' + process.env.RUN_MODE]
 app.listen(port, () => {
-  console.log(`Server running on ${port}`);
+  console.log(`Server running on ${clc.green.underline(port)}`);
 });
 
 // (()=>{
