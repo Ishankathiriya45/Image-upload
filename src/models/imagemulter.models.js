@@ -1,7 +1,8 @@
-'use strict';
+"use strict";
+const { Model } = require("sequelize");
 const {
-  Model
-} = require('sequelize');
+  CommonUtil: { getFileUrl },
+} = require("../util");
 module.exports = (sequelize, DataTypes) => {
   class ImageMulter extends Model {
     /**
@@ -13,26 +14,34 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  ImageMulter.init({
-    image_id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-      allowNull: false,
+  ImageMulter.init(
+    {
+      image_id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      image: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        get() {
+          return this.getDataValue("image")
+            ? getFileUrl("multer", this.getDataValue("image"))
+            : getFileUrl("multer", "default.png");
+        },
+      },
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  }, {
-    timestamps: true,
-    sequelize,
-    modelName: 'ImageMulter',
-    tableName: 'imagemulter',
-  });
+    {
+      timestamps: true,
+      sequelize,
+      modelName: "ImageMulter",
+      tableName: "imagemulter",
+    }
+  );
   return ImageMulter;
 };
