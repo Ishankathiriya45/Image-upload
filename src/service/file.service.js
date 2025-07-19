@@ -29,6 +29,7 @@ class FileService {
 
         const fileName = generateFileName(file.originalname);
         const filePath = path.join(uploadDir, fileName);
+        // console.log({filePath})
 
         await fs.promises.writeFile(filePath, file.buffer);
 

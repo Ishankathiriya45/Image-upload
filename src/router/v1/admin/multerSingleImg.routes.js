@@ -40,4 +40,13 @@ router.get("/list", async (req, res) => {
   return res.status(result.status).send(result);
 });
 
+router.put(
+  "/:imageId/update",
+  fileUpload().single("image"),
+  async (req, res) => {
+    const result = await MulterCtr1.update(req, res);
+    return res.status(result.status).send(result);
+  }
+);
+
 module.exports = router;
