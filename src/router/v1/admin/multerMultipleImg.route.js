@@ -5,11 +5,14 @@ const {
 const upload = require("../../../service/multer.service");
 const multer = require("multer");
 const { responseMsg } = require("../../../response");
+const {
+  ImageUtil: { fileUpload },
+} = require("../../../util");
 const router = express();
 
 let MulterCtrl = new MulterMultipleImgController();
 
-router.post("/create-productImg", async (req, res) => {
+router.post("/create-productImg02", async (req, res) => {
   upload.array("imageUrl", 3)(req, res, async function (error) {
     if (error instanceof multer.MulterError) {
       if (error.code == "LIMIT_UNEXPECTED_FILE") {
@@ -23,10 +26,19 @@ router.post("/create-productImg", async (req, res) => {
           );
       }
     } else {
-      const result = await MulterCtrl.create(req, res);
+      const result = await MulterCtrl.createDiff02(req, res);
       return res.status(result.status).send(result);
     }
   });
 });
+
+router.post(
+  "/create-productImg01",
+  fileUpload().array("imageUrl", 4),
+  async (req, res) => {
+    const result = await MulterCtrl.createDiff01(req, res);
+    return res.status(result.status).send(result);
+  }
+);
 
 module.exports = router;

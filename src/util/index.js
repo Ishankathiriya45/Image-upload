@@ -1,4 +1,4 @@
 module.exports = {
-  ImageUtil: require("./image.util"),
+  ImageUtil: require("./multer.util"),
   CommonUtil: require("./common.util"),
 };

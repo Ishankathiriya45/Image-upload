@@ -40,6 +40,7 @@ module.exports = {
       "jpeg",
       "svg",
       "pdf",
+      "jfif",
       "docx",
       "glb",
     ];
